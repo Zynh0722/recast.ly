@@ -10,3 +10,5 @@ compiled/
 ## API keys ##
 src/config/config.js
 compiled/config/config.js
+
+.vsls.json

@@ -2,15 +2,33 @@ import exampleVideoData from '/src/data/exampleVideoData.js';
 import Search from './Search.js';
 import VideoList from './VideoList.js';
 import VideoPlayer from './VideoPlayer.js';
+import searchYouTube from '../lib/searchYouTube.js';
 
 class App extends React.Component {
   constructor(props) {
     super(props),
 
     this.state = {
-      selected: exampleVideoData[0],
-      videos: exampleVideoData
+      videos: [],
+      selected: {
+        id: {
+          videoId: 0
+        },
+        snippet: {
+          title: '',
+          description: ''
+        }
+      }
     };
+  }
+
+  componentDidMount() {
+    searchYouTube('', function (data) {
+      this.setState({
+        videos: data,
+        selected: data[0]
+      });
+    }.bind(this));
   }
 
   entryOnClick(key, event) {
@@ -19,12 +37,26 @@ class App extends React.Component {
     });
   }
 
+  searchOnClick(event) {
+    event.persist();
+    event.target.disabled = true;
+    setTimeout(function() { event.target.disabled = false; }.bind(this), 500);
+
+    let callback = function (data) {
+      this.setState({
+        videos: data
+      });
+    };
+
+    searchYouTube(event.target.previousElementSibling.value, callback.bind(this));
+  }
+
   render() {
     return (
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
-            <Search />
+            <Search searchClick={this.searchOnClick.bind(this)}/>
           </div>
         </nav>
         <div className="row">
